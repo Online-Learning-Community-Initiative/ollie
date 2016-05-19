@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "8115707291",
+    "firebase_url": "https://ollie-16005.firebaseio.com",
+    "project_id": "ollie-16005",
+    "storage_bucket": "ollie-16005.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8115707291:android:0d36865a83291281",
+        "android_client_info": {
+          "package_name": "edu.rolc.ollie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "8115707291-e7stb4aatefrevbfsqib6pd4rgj51rje.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQJkvr7FriJnYF2Y1SuzQCpT5lgGCgcRE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
