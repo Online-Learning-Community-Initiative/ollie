@@ -5,28 +5,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.firebase.database.*;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        doWork();
-    }
-
-    private void doWork() {
-        addNewContent("file1");
-        addNewContent("file2");
-    }
-
-    private void addNewContent(String filename) {
-        FirebaseDatabase cDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference contentdb = cDatabase.getReference("contents");
-        String key = contentdb.push().getKey();
-        Content content = new Content(key, filename);
-        contentdb.child(key).setValue(content);
+        ContentDB.addNewContent("file1");
+        ContentDB.addNewContent("file2");
     }
 
     @Override
