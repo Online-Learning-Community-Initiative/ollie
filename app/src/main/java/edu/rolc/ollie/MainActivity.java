@@ -11,8 +11,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ContentDB.addNewContent("math", "file1");
-        ContentDB.addNewContent("physics", "file2");
     }
 
     @Override
