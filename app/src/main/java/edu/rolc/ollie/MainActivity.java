@@ -1,16 +1,52 @@
 package edu.rolc.ollie;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements ContentFragment.CurrentContentView {
+    ContentFragment contentFragment;
+    private int lastItem = -1;
+    private int curItem = -1;
+
+    public int getCurItem() {
+        return curItem;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Content Fragment
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        this.contentFragment = new ContentFragment();
+        fragmentTransaction.add(R.id.fragment, this.contentFragment);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (this.lastItem != -1) {
+            menu.findItem(this.lastItem).setVisible(true);
+        }
+
+        if (this.curItem != -1) {
+            menu.findItem(this.curItem).setVisible(false);
+        } else {
+            this.curItem = R.id.listview;
+            menu.findItem(this.curItem).setVisible(false);
+        }
+
+        return true;
     }
 
     @Override
@@ -25,12 +61,13 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        this.lastItem = this.curItem;
+        this.curItem = item.getItemId();
+        getFragmentManager()
+                .beginTransaction()
+                .detach(this.contentFragment)
+                .attach(this.contentFragment)
+                .commit();
 
         return super.onOptionsItemSelected(item);
     }

@@ -3,8 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="edu.rolc.ollie.MainActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/listview"
+        android:title="@string/listview"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/gridview"
+        android:title="@string/gridview"
+        app:showAsAction="collapseActionView" />
 </menu>
