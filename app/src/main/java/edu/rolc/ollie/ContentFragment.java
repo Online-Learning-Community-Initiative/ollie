@@ -3,6 +3,7 @@ package edu.rolc.ollie;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -79,18 +80,19 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String topic = (String) parent.getItemAtPosition(position);
-        if (!RemoteConfig.containsTopic(topic)) {
-            return;
+        if (RemoteConfig.containsTopic(topic)) {
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            Fragment fragment = new ContentFragment();
+            Bundle args = new Bundle();
+            args.putString("topic", topic);
+            fragment.setArguments(args);
+            fragmentTransaction.replace(R.id.fragment, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        } else {
+            Intent intent = new Intent(getActivity(), RenderContentActivity.class);
+            startActivity(intent);
         }
-
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment fragment = new ContentFragment();
-        Bundle args = new Bundle();
-        args.putString("topic", topic);
-        fragment.setArguments(args);
-        fragmentTransaction.replace(R.id.fragment, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
     }
 }
