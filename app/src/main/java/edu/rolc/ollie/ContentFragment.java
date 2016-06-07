@@ -1,5 +1,7 @@
 package edu.rolc.ollie;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -10,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class ContentFragment extends Fragment implements AdapterView.OnItemClickListener {
     CurrentContentView currentContentView;
@@ -51,18 +52,25 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         int curItem = this.currentContentView.getCurItem();
+
+        String topic = "";
+        Bundle args = getArguments();
+        if (args != null) {
+            topic = args.getString("topic");
+        }
+
         if (curItem == R.id.gridview) {
             GridView gridView = (GridView) getActivity().findViewById(R.id.grid);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1,
-                    RemoteConfig.getSubjects());
+                    RemoteConfig.getTopics(topic));
             gridView.setAdapter(adapter);
             gridView.setOnItemClickListener(this);
         } else {
             ListView listView = (ListView) getActivity().findViewById(R.id.d_list);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1,
-                    RemoteConfig.getSubjects());
+                    RemoteConfig.getTopics(topic));
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(this);
         }
@@ -70,6 +78,15 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getActivity(), "Item: " + position, Toast.LENGTH_SHORT).show();
+        String topic = (String) parent.getItemAtPosition(position);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment fragment = new ContentFragment();
+        Bundle args = new Bundle();
+        args.putString("topic", topic);
+        fragment.setArguments(args);
+        fragmentTransaction.replace(R.id.fragment, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }

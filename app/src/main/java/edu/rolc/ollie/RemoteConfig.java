@@ -1,6 +1,7 @@
 package edu.rolc.ollie;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -8,13 +9,28 @@ import java.util.List;
  *       Later, we can consider using Firebase Remote Config
  */
 public class RemoteConfig {
-    private static List<String> subjects;
+    private static HashMap<String, List<String>> topics;
+    private static String root = "Root";
 
     static {
-        subjects = Arrays.asList("Maths", "Physics", "Chemistry", "English");
+        topics = new HashMap<String, List<String>>() {{
+            put(root, Arrays.asList("Maths", "Physics", "Chemistry", "English"));
+            put("Maths", Arrays.asList("Addition", "Subtraction", "Logarithm", "Calculus"));
+            put("Physics", Arrays.asList("Friction", "Newton", "Kinematics", "Thermodynamics"));
+            put("Chemistry", Arrays.asList("Physical", "Oraganic", "Inorganic"));
+            put("English", Arrays.asList("Grammar"));
+        }};
     }
 
     public static List<String> getSubjects() {
-        return subjects;
+        return topics.get(root);
+    }
+
+    public static List<String> getTopics(String topic) {
+        if (topics.containsKey(topic)) {
+            return topics.get(topic);
+        } else {
+            return topics.get(root);
+        }
     }
 }
