@@ -1,5 +1,7 @@
 package edu.rolc.ollie;
 
+import android.util.Log;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +12,8 @@ import java.util.List;
  */
 public class RemoteConfig {
     private static HashMap<String, List<String>> topics;
-    private static String root = "Root";
+    public static String root = "Root";
+    public static String TAG = "RemoteConfig";
 
     static {
         topics = new HashMap<String, List<String>>() {{
@@ -22,14 +25,20 @@ public class RemoteConfig {
         }};
     }
 
+    // returns root
     public static List<String> getSubjects() {
         return topics.get(root);
+    }
+
+    public static boolean containsTopic(String topic) {
+        return topics.containsKey(topic);
     }
 
     public static List<String> getTopics(String topic) {
         if (topics.containsKey(topic)) {
             return topics.get(topic);
         } else {
+            Log.w(TAG, "Topic:" + topic + " doesn't exist, returning root!");
             return topics.get(root);
         }
     }

@@ -53,7 +53,7 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
         super.onActivityCreated(savedInstanceState);
         int curItem = this.currentContentView.getCurItem();
 
-        String topic = "";
+        String topic = RemoteConfig.root;
         Bundle args = getArguments();
         if (args != null) {
             topic = args.getString("topic");
@@ -79,6 +79,10 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String topic = (String) parent.getItemAtPosition(position);
+        if (!RemoteConfig.containsTopic(topic)) {
+            return;
+        }
+
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment fragment = new ContentFragment();
