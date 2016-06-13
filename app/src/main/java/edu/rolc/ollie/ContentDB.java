@@ -31,12 +31,15 @@ public class ContentDB {
         return topics.containsKey(topic);
     }
 
-    public static List<String> getTopics(String topic) {
+    public static void getTopics(String topic, TopicResponseCallback topicResponseCallback) {
+        List<String> newTopics;
         if (topics.containsKey(topic)) {
-            return topics.get(topic);
+            newTopics = topics.get(topic);
         } else {
             Log.w(TAG, "Topic:" + topic + " doesn't exist, returning root!");
-            return topics.get(root);
+            newTopics = topics.get(root);
         }
+
+        topicResponseCallback.onReceivingResponse(newTopics);
     }
 }

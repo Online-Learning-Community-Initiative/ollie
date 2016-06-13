@@ -8,15 +8,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity
-        implements ContentFragment.CurrentContentView {
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity{
     ContentFragment contentFragment;
     private int lastItem = -1;
     private int curItem = -1;
-
-    public int getCurItem() {
-        return curItem;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +22,21 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Content Fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        this.contentFragment = new ContentFragment();
-        fragmentTransaction.add(R.id.fragment, this.contentFragment);
-        fragmentTransaction.commit();
+        // Let's get the root subjects (topics) first
+        final MainActivity curActivity = this;
+        ContentDB.getTopics(ContentDB.root, new TopicResponseCallback() {
+            @Override
+            public void onReceivingResponse(List<String> topics) {
+                // Content Fragment
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                curActivity.contentFragment = new ContentFragment();
+                curActivity.contentFragment.setContent(topics);
+                contentFragment.setCurView(curActivity.curItem);
+                fragmentTransaction.add(R.id.fragment, contentFragment);
+                fragmentTransaction.commit();
+            }
+        });
     }
 
     @Override

@@ -2,7 +2,6 @@ package edu.rolc.ollie;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -14,34 +13,24 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
 
+import java.util.List;
+
 public class ContentFragment extends Fragment implements AdapterView.OnItemClickListener {
-    CurrentContentView currentContentView;
+    private List<String> content;
+    private int curView;
 
-    public ContentFragment() {
+    public void setContent(List<String> content) {
+        this.content = content;
     }
 
-    // Container Activity must implement this interface
-    public interface CurrentContentView {
-        public int getCurItem();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        try {
-            this.currentContentView = (CurrentContentView) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnHeadlineSelectedListener");
-        }
+    public void setCurView(int curView) {
+        this.curView = curView;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        int curItem = this.currentContentView.getCurItem();
-        if (curItem == R.id.gridview) {
+        if (this.curView == R.id.gridview) {
             return inflater.inflate(R.layout.fragment_grid, container, false);
         } else {
             // by default, we return the list view
@@ -52,26 +41,19 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        int curItem = this.currentContentView.getCurItem();
 
-        String topic = ContentDB.root;
-        Bundle args = getArguments();
-        if (args != null) {
-            topic = args.getString("topic");
-        }
-
-        if (curItem == R.id.gridview) {
+        if (this.curView == R.id.gridview) {
             GridView gridView = (GridView) getActivity().findViewById(R.id.grid);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1,
-                    ContentDB.getTopics(topic));
+                    this.content);
             gridView.setAdapter(adapter);
             gridView.setOnItemClickListener(this);
         } else {
             ListView listView = (ListView) getActivity().findViewById(R.id.d_list);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1,
-                    ContentDB.getTopics(topic));
+                    this.content);
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(this);
         }
@@ -81,15 +63,20 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String topic = (String) parent.getItemAtPosition(position);
         if (ContentDB.containsTopic(topic)) {
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            Fragment fragment = new ContentFragment();
-            Bundle args = new Bundle();
-            args.putString("topic", topic);
-            fragment.setArguments(args);
-            fragmentTransaction.replace(R.id.fragment, fragment);
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
+            final ContentFragment contentFragment = this;
+            ContentDB.getTopics(topic, new TopicResponseCallback() {
+                @Override
+                public void onReceivingResponse(List<String> topics) {
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    ContentFragment fragment = new ContentFragment();
+                    fragment.setContent(topics);
+                    fragment.setCurView(contentFragment.curView);
+                    fragmentTransaction.replace(R.id.fragment, fragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
+            });
         } else {
             Intent intent = new Intent(getActivity(), RenderContentActivity.class);
             startActivity(intent);
