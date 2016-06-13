@@ -1,40 +1,42 @@
 package edu.rolc.ollie;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
+import android.util.Log;
+
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class ContentDB {
+    private static final String TAG = "Firebase";
+    public static String root = "Root";
+
     private static FirebaseDatabase cDatabase = FirebaseDatabase.getInstance();
+    private static HashMap<String, List<String>> topics;
 
-    public static boolean addNewContent(String sub, String filename) {
-        DatabaseReference contentdb = cDatabase.getReference(sub);
-        String key = contentdb.push().getKey();
-        Content content = new Content(key, filename);
-        contentdb.child(key).setValue(content);
-        return true;
+    static {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+        topics = new HashMap<String, List<String>>() {{
+            put(root, Arrays.asList("Maths", "Physics", "Chemistry", "English"));
+            put("Maths", Arrays.asList("Addition", "Subtraction", "Logarithm", "Calculus"));
+            put("Physics", Arrays.asList("Friction", "Newton", "Kinematics", "Thermodynamics"));
+            put("Chemistry", Arrays.asList("Physical", "Oraganic", "Inorganic"));
+            put("English", Arrays.asList("Grammar"));
+        }};
     }
 
-    public static void retrieveContentForSubject(String sub) {
-        DatabaseReference contentdb = cDatabase.getReference(sub);
-        contentdb.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Get index for given subject
-                        Content content = dataSnapshot.getValue(Content.class);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-//                        Log.w(TAG, "postComments:onCancelled", databaseError.toException());
-//                        Toast.makeText(mContext, "Failed to load comments.",
-//                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+    public static boolean containsTopic(String topic) {
+        return topics.containsKey(topic);
     }
 
-    // upload and download file
+    public static List<String> getTopics(String topic) {
+        if (topics.containsKey(topic)) {
+            return topics.get(topic);
+        } else {
+            Log.w(TAG, "Topic:" + topic + " doesn't exist, returning root!");
+            return topics.get(root);
+        }
+    }
 }

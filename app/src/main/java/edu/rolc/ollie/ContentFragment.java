@@ -54,7 +54,7 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
         super.onActivityCreated(savedInstanceState);
         int curItem = this.currentContentView.getCurItem();
 
-        String topic = RemoteConfig.root;
+        String topic = ContentDB.root;
         Bundle args = getArguments();
         if (args != null) {
             topic = args.getString("topic");
@@ -64,14 +64,14 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
             GridView gridView = (GridView) getActivity().findViewById(R.id.grid);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1,
-                    RemoteConfig.getTopics(topic));
+                    ContentDB.getTopics(topic));
             gridView.setAdapter(adapter);
             gridView.setOnItemClickListener(this);
         } else {
             ListView listView = (ListView) getActivity().findViewById(R.id.d_list);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1,
-                    RemoteConfig.getTopics(topic));
+                    ContentDB.getTopics(topic));
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(this);
         }
@@ -80,7 +80,7 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String topic = (String) parent.getItemAtPosition(position);
-        if (RemoteConfig.containsTopic(topic)) {
+        if (ContentDB.containsTopic(topic)) {
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             Fragment fragment = new ContentFragment();
