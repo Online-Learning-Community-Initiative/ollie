@@ -11,4 +11,9 @@
         android:id="@+id/gridview"
         android:title="@string/gridview"
         app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/recordbutton"
+        android:title="@string/recordvideo"
+        app:showAsAction="collapseActionView" />
 </menu>

@@ -17,6 +17,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <uses-feature android:name="android.hardware.camera" android:required="false" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
         </activity>
         <activity
             android:name=".RenderContentActivity"
