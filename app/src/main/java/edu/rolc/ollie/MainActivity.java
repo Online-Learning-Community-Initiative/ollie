@@ -24,11 +24,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
-    private Uri fileUri;
 
     ContentFragment contentFragment;
     private int lastItem = -1;
     private int curItem = -1;
+
+    private static final String thisApp = "OLLiE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,25 +106,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static Uri getOutputMediaFileUri(int type){
+        File outFile = getOutputMediaFile(type);
+        if (outFile == null) {
+            return null;
+        }
+
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
     private static File getOutputMediaFile(int type){
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
+        if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            Log.d(thisApp, "SDCard not mounted!");
+            return null;
+        }
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
+                Environment.DIRECTORY_PICTURES), thisApp);
 
         // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                Log.d("MyCameraApp", "failed to create directory");
-                return null;
-            }
-        }
+        // if (! mediaStorageDir.exists()){
+        //     if (! mediaStorageDir.mkdirs()){
+        //         Log.d(thisApp, "failed to create directory");
+        //         return null;
+        //     }
+        // }
 
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -135,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
                     "VID_"+ timeStamp + ".mp4");
         } else {
+            Log.w(thisApp, "unknown media file!");
             return null;
         }
 
@@ -147,13 +154,22 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         if (item.getItemId() == R.id.recordbutton) {
-            Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+            Uri fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
+            if (fileUri == null) {
+                Log.w(thisApp, "Failed to get path to media file!");
+                Toast.makeText(this, "Error in writing to SDCard!", Toast.LENGTH_LONG).show();
+                return super.onOptionsItemSelected(item);
+            }
 
-            fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
+            Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
             intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
             if (intent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
+            } else {
+                Log.w(thisApp, "Failed to resolve Video activity!");
+                Toast.makeText(this, "Error in capturing video!",
+                        Toast.LENGTH_LONG).show();
             }
 
             return super.onOptionsItemSelected(item);
