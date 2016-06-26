@@ -15,5 +15,5 @@
     <item
         android:id="@+id/recordbutton"
         android:title="@string/recordvideo"
-        app:showAsAction="collapseActionView" />
+        app:showAsAction="always" />
 </menu>
