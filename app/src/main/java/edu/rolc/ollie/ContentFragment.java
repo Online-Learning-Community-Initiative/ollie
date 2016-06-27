@@ -42,6 +42,10 @@ public class ContentFragment extends Fragment implements AdapterView.OnItemClick
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        if (this.content == null) {
+            return;
+        }
+
         if (this.curView == R.id.gridview) {
             GridView gridView = (GridView) getActivity().findViewById(R.id.grid);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),

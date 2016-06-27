@@ -30,13 +30,10 @@ public class CameraHelper {
                 Environment.DIRECTORY_PICTURES), APP_NAME);
 
         // Create the storage directory if it does not exist
-        Log.d(TAG, ""+mediaStorageDir);
-//        if (!mediaStorageDir.exists()) {
-//            if (!mediaStorageDir.mkdirs()) {
-//                Log.d(TAG, "Failed to create directory");
-//                return null;
-//            }
-//        }
+        Log.d(TAG, "" + mediaStorageDir);
+        if (!mediaStorageDir.exists()) {
+            mediaStorageDir.mkdirs();
+        }
 
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
