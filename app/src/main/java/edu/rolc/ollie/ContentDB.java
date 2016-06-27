@@ -58,7 +58,7 @@ public class ContentDB {
 
         DatabaseReference dbRefToSubjects = cDatabase.getReference(topic);
         if (dbRefToSubjects == null) {
-            Log.w(TAG, "getTopics:"+"Topic "+topic+" not found!");
+            Log.w(TAG, "getTopics:" + "Topic " + topic + " not found!");
             return;
         }
 

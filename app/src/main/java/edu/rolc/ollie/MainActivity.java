@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 curActivity.contentFragment = new ContentFragment();
                 curActivity.contentFragment.setContent(topics);
-                contentFragment.setCurView(curActivity.curItem);
-                fragmentTransaction.add(R.id.fragment, contentFragment);
+                curActivity.contentFragment.setCurView(curActivity.curItem);
+                fragmentTransaction.add(R.id.fragment, curActivity.contentFragment);
                 fragmentTransaction.commit();
             }
         });
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private static Uri getOutputMediaFileUri(int type){
+    private static Uri getOutputMediaFileUri(int type) {
         File outFile = getOutputMediaFile(type);
         if (outFile == null) {
             return null;
@@ -114,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
-    private static File getOutputMediaFile(int type){
-        if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+    private static File getOutputMediaFile(int type) {
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             Log.d(thisApp, "SDCard not mounted!");
             return null;
         }
@@ -134,12 +134,12 @@ public class MainActivity extends AppCompatActivity {
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE){
+        if (type == MEDIA_TYPE_IMAGE) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
-        } else if(type == MEDIA_TYPE_VIDEO) {
+                    "IMG_" + timeStamp + ".jpg");
+        } else if (type == MEDIA_TYPE_VIDEO) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "VID_"+ timeStamp + ".mp4");
+                    "VID_" + timeStamp + ".mp4");
         } else {
             Log.w(thisApp, "unknown media file!");
             return null;
@@ -175,8 +175,10 @@ public class MainActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
         }
 
+        Log.d(thisApp, "" + item.getTitle());
         this.lastItem = this.curItem;
         this.curItem = item.getItemId();
+        this.contentFragment.setCurView(this.curItem);
         getFragmentManager()
                 .beginTransaction()
                 .detach(this.contentFragment)
