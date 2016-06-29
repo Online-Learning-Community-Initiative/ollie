@@ -13,13 +13,13 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class CameraHelper {
-    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-    public static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
-    public static final int MEDIA_TYPE_IMAGE = 1;
-    public static final int MEDIA_TYPE_VIDEO = 2;
-    private static String TAG = "CAMERA";
-    private static String APP_NAME = "OLLiE";
+    public class CameraHelper {
+        public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+        public static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
+        public static final int MEDIA_TYPE_IMAGE = 1;
+        public static final int MEDIA_TYPE_VIDEO = 2;
+        private static String APP_NAME = MainActivity.THIS_APP;
+        private static String TAG = "CAMERA";
 
     private static File getOutputMediaFile(int type) {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -62,7 +62,7 @@ public class CameraHelper {
         return Uri.fromFile(outFile);
     }
 
-    public static void recordVideo(Activity curActivity) {
+    public static void captureCamera(Activity curActivity, int requestCode) {
         PackageManager packageManager = curActivity.getPackageManager();
         if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) == false) {
             Toast.makeText(curActivity,
@@ -71,18 +71,27 @@ public class CameraHelper {
             return;
         }
 
-        Uri fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
+        Uri fileUri = getOutputMediaFileUri(requestCode);
         if (fileUri == null) {
             Log.w(TAG, "Failed to get path to media file!");
             Toast.makeText(curActivity, "Error in writing to SDCard!", Toast.LENGTH_LONG).show();
             return;
         }
 
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        Intent intent;
+        int intentRequestCode;
+        if (requestCode == MEDIA_TYPE_VIDEO) {
+            intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+            intentRequestCode = CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE;
+        } else {
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intentRequestCode = CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE;
+        }
+
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
         if (intent.resolveActivity(curActivity.getPackageManager()) != null) {
-            curActivity.startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
+            curActivity.startActivityForResult(intent, intentRequestCode);
         } else {
             Log.w(TAG, "Failed to resolve Video activity!");
             Toast.makeText(curActivity, "Error in capturing video!", Toast.LENGTH_LONG).show();

@@ -2,5 +2,7 @@
     <string name="app_name">OLLiE</string>
     <string name="listview">Switch To List View</string>
     <string name="gridview">Switch to Grid View</string>
-    <string name="recordvideo">Record Video</string>
+    <string name="recordVideo">Record Video</string>
+    <string name="captureImage">Capture Image</string>
+    <string name="uploadFile">Upload File</string>
 </resources>

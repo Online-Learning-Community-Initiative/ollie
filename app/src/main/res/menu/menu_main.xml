@@ -13,7 +13,20 @@
         app:showAsAction="collapseActionView" />
 
     <item
-        android:id="@+id/recordbutton"
-        android:title="@string/recordvideo"
+        android:id="@+id/recordButton"
+        android:title="@string/recordVideo"
+        android:icon="@mipmap/ic_video"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/captureButton"
+        android:title="@string/captureImage"
+        android:icon="@android:drawable/ic_menu_camera"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/uploadButton"
+        android:title="@string/uploadFile"
+        android:icon="@android:drawable/ic_menu_upload"
         app:showAsAction="always" />
 </menu>
