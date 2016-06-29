@@ -9,6 +9,7 @@ public class DocHelper {
     public static void performFileSearch(Activity curActivity) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
         curActivity.startActivityForResult(intent, READ_REQUEST_CODE);
     }
 }

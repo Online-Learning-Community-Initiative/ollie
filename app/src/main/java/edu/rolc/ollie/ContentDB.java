@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -16,6 +17,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -90,29 +93,57 @@ public class ContentDB {
         });
     }
 
-    public static void uploadFile(Activity curActivity, android.content.Intent data) {
+    public static void uploadFileUri(Activity curActivity, Uri fileUri) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference mountainsRef = storageRef.child("mountains.mp4");
+        StorageReference fileRef = storageRef.child((new File("" + fileUri)).getName());
+
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream(new File(fileUri.toString()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.w(TAG, "Unable to upload file: " + fileUri);
+            return;
+        }
+
+        upload(curActivity, fileRef, stream);
+    }
+
+    public static void uploadIntentData(Activity curActivity, android.content.Intent data) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference fileRef = storageRef.child((new File("" + data.getData())).getName());
 
         InputStream stream = null;
         try {
             stream = curActivity.getContentResolver().openInputStream(data.getData());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            Log.w(TAG, "Unable to upload file: " + data.getData());
+            return;
         }
 
-        UploadTask uploadTask = mountainsRef.putStream(stream);
+        upload(curActivity, fileRef, stream);
+    }
+
+    private static void upload(final Activity curActivity,
+            final StorageReference fileRef, InputStream istream) {
+        UploadTask uploadTask = fileRef.putStream(istream);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
+                Log.w(TAG, "Unable to upload file: " + fileRef);
+                Log.w(TAG, "" + exception.getStackTrace());
+                Toast.makeText(curActivity, "Error in uploading file to DB!",
+                        Toast.LENGTH_LONG).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                Log.d(TAG, "File uploaded: " + taskSnapshot.getMetadata());
+                Toast.makeText(curActivity, "File uploaded successfully!",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }

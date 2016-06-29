@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             CameraHelper.captureCamera(this, CameraHelper.MEDIA_TYPE_VIDEO);
         } else if (item.getItemId() == R.id.captureButton) {
             CameraHelper.captureCamera(this, CameraHelper.MEDIA_TYPE_IMAGE);
-        } else if (item.getItemId() == R.id.captureButton) {
+        } else if (item.getItemId() == R.id.uploadButton) {
             DocHelper.performFileSearch(this);
         } else {
             this.lastItem = this.curItem;
@@ -109,12 +110,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CameraHelper.CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE ||
-                requestCode == CameraHelper.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CameraHelper.onActivityResult(this, requestCode, resultCode, data);
-            ContentDB.uploadFile(this, data);
+        if (requestCode == CameraHelper.CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
+            CameraHelper.onVideoActivityResult(this, requestCode, resultCode, data);
+            ContentDB.uploadIntentData(this, data);
+        } else if (requestCode == CameraHelper.CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            Uri fileUri = CameraHelper.onImageActivityResult(this, requestCode, resultCode);
+            if (fileUri != null) {
+                ContentDB.uploadFileUri(this, fileUri);
+            }
         } else if (requestCode == DocHelper.READ_REQUEST_CODE) {
-            ContentDB.uploadFile(this, data);
+            ContentDB.uploadIntentData(this, data);
         } else {
             Log.w(THIS_APP, "Unknown activity result!");
         }

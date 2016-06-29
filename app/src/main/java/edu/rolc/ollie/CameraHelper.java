@@ -13,13 +13,15 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-    public class CameraHelper {
-        public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-        public static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
-        public static final int MEDIA_TYPE_IMAGE = 1;
-        public static final int MEDIA_TYPE_VIDEO = 2;
-        private static String APP_NAME = MainActivity.THIS_APP;
-        private static String TAG = "CAMERA";
+public class CameraHelper {
+    public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    public static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
+    public static final int MEDIA_TYPE_IMAGE = 1;
+    public static final int MEDIA_TYPE_VIDEO = 2;
+    private static String APP_NAME = MainActivity.THIS_APP;
+    private static String TAG = "CAMERA";
+
+    private static Uri fileUri;
 
     private static File getOutputMediaFile(int type) {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -71,7 +73,7 @@ import java.util.Date;
             return;
         }
 
-        Uri fileUri = getOutputMediaFileUri(requestCode);
+        fileUri = getOutputMediaFileUri(requestCode);
         if (fileUri == null) {
             Log.w(TAG, "Failed to get path to media file!");
             Toast.makeText(curActivity, "Error in writing to SDCard!", Toast.LENGTH_LONG).show();
@@ -93,35 +95,38 @@ import java.util.Date;
         if (intent.resolveActivity(curActivity.getPackageManager()) != null) {
             curActivity.startActivityForResult(intent, intentRequestCode);
         } else {
-            Log.w(TAG, "Failed to resolve Video activity!");
-            Toast.makeText(curActivity, "Error in capturing video!", Toast.LENGTH_LONG).show();
+            Log.w(TAG, "Failed to resolve activity!");
+            Toast.makeText(curActivity, "Error in capturing from camera!",
+                    Toast.LENGTH_LONG).show();
         }
     }
 
-    public static void onActivityResult(Activity curActivity, int requestCode,
-                                        int resultCode, Intent data) {
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                // Image captured and saved to fileUri specified in the Intent
-                Toast.makeText(curActivity, "Image saved to:\n" +
-                        data.getData(), Toast.LENGTH_LONG).show();
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                // User cancelled the image capture
-            } else {
-                // Image capture failed, advise user
-            }
+    public static void onVideoActivityResult(Activity curActivity, int requestCode,
+                                             int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            // Video captured and saved to fileUri specified in the Intent
+            Toast.makeText(curActivity, "Video saved to:\n" +
+                    data.getData(), Toast.LENGTH_SHORT).show();
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            // User cancelled the video capture
+        } else {
+            // Video capture failed, advise user
         }
+    }
 
-        if (requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                // Video captured and saved to fileUri specified in the Intent
-                Toast.makeText(curActivity, "Video saved to:\n" +
-                        data.getData(), Toast.LENGTH_LONG).show();
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                // User cancelled the video capture
-            } else {
-                // Video capture failed, advise user
-            }
+    public static Uri onImageActivityResult(Activity curActivity, int requestCode,
+                                             int resultCode) {
+        if (resultCode == Activity.RESULT_OK) {
+            // Image captured and saved to fileUri specified in the Intent
+            Toast.makeText(curActivity, "Image saved to:\n" +
+                    fileUri, Toast.LENGTH_SHORT).show();
+            return fileUri;
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            // User cancelled the image capture
+            return null;
+        } else {
+            // Image capture failed, advise user
+            return null;
         }
     }
 }
