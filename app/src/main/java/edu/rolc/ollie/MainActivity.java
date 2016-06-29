@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CameraHelper.CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
             CameraHelper.onActivityResult(this, requestCode, resultCode, data);
+            ContentDB.uploadFile(this, data);
         } else {
             Log.w(thisApp, "Unknown activity result!");
         }

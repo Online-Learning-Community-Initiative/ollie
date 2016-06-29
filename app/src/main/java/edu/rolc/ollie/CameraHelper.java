@@ -2,6 +2,7 @@ package edu.rolc.ollie;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -62,6 +63,14 @@ public class CameraHelper {
     }
 
     public static void recordVideo(Activity curActivity) {
+        PackageManager packageManager = curActivity.getPackageManager();
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) == false) {
+            Toast.makeText(curActivity,
+                    "This device does not have a camera!",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Uri fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
         if (fileUri == null) {
             Log.w(TAG, "Failed to get path to media file!");
